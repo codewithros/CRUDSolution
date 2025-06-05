@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
+using CRUDDemo.Entities;
 
 namespace CRUDDemo.ServiceContracts
 {

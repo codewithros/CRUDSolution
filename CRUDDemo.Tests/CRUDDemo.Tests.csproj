@@ -17,6 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CRUDDemo.Entities\CRUDDemo.Entities.csproj" />
+    <ProjectReference Include="..\CRUDDemo.ServiceContracts\CRUDDemo.ServiceContracts.csproj" />
+    <ProjectReference Include="..\CRUDDemo.Services\CRUDDemo.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

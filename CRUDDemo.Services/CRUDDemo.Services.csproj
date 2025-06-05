@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CRUDDemo.Entities\CRUDDemo.Entities.csproj" />
+    <ProjectReference Include="..\CRUDDemo.ServiceContracts\CRUDDemo.ServiceContracts.csproj" />
   </ItemGroup>
 
 </Project>
