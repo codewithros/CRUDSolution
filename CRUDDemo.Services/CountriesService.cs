@@ -36,5 +36,10 @@ namespace CRUDDemo.Services
             // Return response
             return country.ToCountryResponse();
         }
+
+        public List<CountryResponse> GetAllCountries()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

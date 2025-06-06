@@ -17,5 +17,11 @@ namespace CRUDDemo.ServiceContracts
         /// <param name="countryAddRequest">The details of the country to add.</param>
         /// <returns>The added country with its assigned identifier.</returns>
         CountryResponse AddCountry(CountryAddRequest? countryAddRequest);
+
+        /// <summary>
+        /// Retrieves all countries as a list of CountryResponse objects.
+        /// </summary>
+        /// <returns>A list of CountryResponse representing all countries.</returns>
+        List<CountryResponse> GetAllCountries();
     }
 }
