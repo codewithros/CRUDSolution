@@ -23,5 +23,14 @@ namespace CRUDDemo.ServiceContracts
         /// </summary>
         /// <returns>A list of CountryResponse representing all countries.</returns>
         List<CountryResponse> GetAllCountries();
+
+        /// <summary>
+        /// Retrieves a country by its unique CountryId.
+        /// </summary>
+        /// <param name="countryId">The unique identifier of the country to retrieve.</param>
+        /// <returns>
+        /// A <see cref="CountryResponse"/> if the country is found; otherwise, <c>null</c>.
+        /// </returns>
+        CountryResponse? GetCountryByCountryId(Guid? countryId);
     }
 }

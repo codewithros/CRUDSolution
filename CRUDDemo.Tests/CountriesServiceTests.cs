@@ -101,5 +101,39 @@ namespace CRUDDemo.Tests
                 Assert.Contains(added, expectedCountries);
             }
         }
+
+        #region GetCountryByCountryId
+        [Fact]
+        public void GetCountryByCountryId_WhenCountryIdIsNull_ReturnsNull()
+        {
+            // Arrange
+            Guid? countryId = null;
+
+            // Act
+            var result = _countriesService.GetCountryByCountryId(countryId);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void GetCountryByCountryId_WhenCountryExists_ReturnsMatchingCountry()
+        {
+            // Arrange
+            var countryAddRequest = new CountryAddRequest
+            {
+                CountryName = "Japan"
+            };
+
+            var addedCountry = _countriesService.AddCountry(countryAddRequest);
+
+            // Act
+            var result = _countriesService.GetCountryByCountryId(addedCountry.CountryId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(addedCountry, result);
+        }
+        #endregion
     }
 }
