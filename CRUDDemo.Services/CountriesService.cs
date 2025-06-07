@@ -40,10 +40,14 @@ namespace CRUDDemo.Services
         {
             return _countries.Select(c => c.ToCountryResponse()).ToList();
         }
-
         public CountryResponse? GetCountryByCountryId(Guid? countryId)
         {
-            throw new NotImplementedException();
+            if (countryId == null)
+                return null;
+
+            var country = _countries.FirstOrDefault(c => c.CountryId == countryId);
+
+            return country?.ToCountryResponse();
         }
     }
 }
