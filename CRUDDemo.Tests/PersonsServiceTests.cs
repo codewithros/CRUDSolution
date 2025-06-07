@@ -14,7 +14,7 @@ namespace CRUDDemo.Tests
     {
         private readonly IPersonsService _personsService;
 
-        public PersonsServiceTests(IPersonsService personsService)
+        public PersonsServiceTests()
         {
             _personsService = new PersonsService(); // use mock/real instance for now
         }
