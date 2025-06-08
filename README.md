@@ -6,7 +6,7 @@ This project demonstrates the principles of separation of concerns using Entitie
 ---
 
 ## 📁 Project Structure
-
+```
 CRUDDemo.sln
 │
 ├── CRUDDemo.Entities # Domain models (e.g., Country)
@@ -26,7 +26,7 @@ CRUDDemo.sln
 ├── CRUDDemo # Main application (entry point)
 │ └── wwwroot
 │ └── site.css
-
+```
 ---
 
 ## 🧱 Key Components
