@@ -50,7 +50,7 @@ namespace CRUDDemo.Services
 
         public List<PersonResponse> GetAllPersons()
         {
-            throw new NotImplementedException();
+            return _persons.Select(p => p.ToPersonResponse()).ToList();
         }
 
         public PersonResponse? GetPersonByPersonId(Guid? personId)
