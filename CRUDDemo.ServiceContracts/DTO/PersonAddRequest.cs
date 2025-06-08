@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CRUDDemo.Entities;
 using System.Xml.Linq;
 using CRUDDemo.ServiceContracts.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace CRUDDemo.ServiceContracts.DTO
 {
@@ -14,11 +15,16 @@ namespace CRUDDemo.ServiceContracts.DTO
     /// </summary>
     public class PersonAddRequest
     {
+        [Required(ErrorMessage = "Name cannot be blank")]
         public string? Name { get; set; }
+
+        [Required(ErrorMessage = "Email cannot be blank")]
+        [EmailAddress(ErrorMessage = "Email value should be valid email")]
         public string? Email { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public GenderOptions Gender { get; set; }
         public Guid? CountryId { get; set; }
+        [Required(ErrorMessage = "Address cannot be blank")]
         public string? Address { get; set; }
         public bool ReceiveNewsLetters { get; set; }
 

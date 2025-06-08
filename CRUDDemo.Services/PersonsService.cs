@@ -1,4 +1,5 @@
 ﻿using System;
+using CRUDDemo.Services.Helpers;
 using CRUDDemo.ServiceContracts.DTO;
 using CRUDDemo.ServiceContracts;
 using CRUDDemo.Entities;
@@ -33,8 +34,8 @@ namespace CRUDDemo.Services
             if (personAddRequest == null)
                 throw new ArgumentNullException(nameof(personAddRequest), "PersonAddRequest cannot be null.");
 
-            if (string.IsNullOrWhiteSpace(personAddRequest.Name))
-                throw new ArgumentException("Name cannot be null or empty.", nameof(personAddRequest.Name));
+            //Model Validations
+            ValidationHelper.ModelValidation(personAddRequest);
 
             // Map DTO to entity
             var person = personAddRequest.ToPerson();
