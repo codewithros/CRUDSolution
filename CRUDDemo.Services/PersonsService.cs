@@ -55,7 +55,12 @@ namespace CRUDDemo.Services
 
         public PersonResponse? GetPersonByPersonId(Guid? personId)
         {
-            throw new NotImplementedException();
+            if (personId == null)
+                return null;
+
+            Person? person = _persons.FirstOrDefault(p => p.PersonId == personId);
+
+            return person != null ? ConvertPersonToPersonResponse(person) : null;
         }
     }
 }
