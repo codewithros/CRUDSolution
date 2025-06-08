@@ -1,15 +1,16 @@
 using CRUDDemo.ServiceContracts;
 using CRUDDemo.ServiceContracts.DTO;
 using CRUDDemo.Services;
+using CRUDDemo.Tests.TestData;
 using Xunit.Abstractions;
 
 namespace CRUDDemo.Tests
 {
-    public class CountriesServiceTests
+    public class CountriesServiceTests : TestWithOutput
     {
         private readonly ICountriesService _countriesService;
         private readonly ITestOutputHelper _testOutputHelper;
-        public CountriesServiceTests(ITestOutputHelper testOutputHelper)
+        public CountriesServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _countriesService = new CountriesService();
             _testOutputHelper = testOutputHelper;
@@ -26,8 +27,8 @@ namespace CRUDDemo.Tests
             var ex = Assert.Throws<ArgumentNullException>(() => _countriesService.AddCountry(request));
 
             //Log
-            _testOutputHelper.WriteLine($"Expected: throw ArgumentNullException");
-            _testOutputHelper.WriteLine($"Actual: {ex.Message}");
+            LogExpected("throw ArgumentNullException");
+            LogActual(ex.Message);
         }
 
         [Fact]
@@ -40,8 +41,8 @@ namespace CRUDDemo.Tests
             var ex = Assert.Throws<ArgumentException>(() => _countriesService.AddCountry(request));
 
             //Log
-            _testOutputHelper.WriteLine($"Expected: throw ArgumentException");
-            _testOutputHelper.WriteLine($"Actual: {ex.Message}");
+            LogExpected("throw ArgumentException");
+            LogActual(ex.Message);
         }
 
         [Fact]
@@ -58,8 +59,8 @@ namespace CRUDDemo.Tests
             var ex = Assert.Throws<ArgumentException>(() => _countriesService.AddCountry(secondRequest));
 
             //Log
-            _testOutputHelper.WriteLine($"Expected: throw ArgumentException");
-            _testOutputHelper.WriteLine($"Actual: {ex.Message}");
+            LogExpected("throw ArgumentException");
+            LogActual(ex.Message);
         }
 
         [Fact]
@@ -73,8 +74,8 @@ namespace CRUDDemo.Tests
             List<CountryResponse> fetchedResponseList = _countriesService.GetAllCountries();
 
             //Log
-            _testOutputHelper.WriteLine($"Expected: response has CountryId and exist in the fetched list");
-            _testOutputHelper.WriteLine($"Actual: CountryId - {addedCountryResponse.CountryId}");
+            LogExpected("Response has CountryId and exist in the fetched list");
+            LogActual($"CountryId - {addedCountryResponse.CountryId}");
 
             // Assert
             Assert.NotEqual(Guid.Empty, addedCountryResponse.CountryId);
@@ -90,9 +91,9 @@ namespace CRUDDemo.Tests
             // Act
             List<CountryResponse> fetchedCountries = _countriesService.GetAllCountries();
 
-            // Log
-            _testOutputHelper.WriteLine($"Expected: Empty List");
-            _testOutputHelper.WriteLine($"Actual: Total persons retrieved: {fetchedCountries.Count}");
+            //Log
+            LogExpected("Empty List");
+            LogActual($"Fetched countries count: {fetchedCountries.Count}");
 
             // Assert
             Assert.Empty(fetchedCountries);
@@ -102,31 +103,27 @@ namespace CRUDDemo.Tests
         public void GetAllCountries_AfterAddingCountries_ReturnsAllAddedCountries()
         {
             // Arrange
-            var countryRequests = new List<CountryAddRequest>
-            {
-                new CountryAddRequest { CountryName = "USA" },
-                new CountryAddRequest { CountryName = "UK" },
-                new CountryAddRequest { CountryName = "CA" }
-            };
+            var countryRequests = CountryTestData.CountryAddRequests;
 
-            _testOutputHelper.WriteLine($"Expected: ");
+            //Act
+            LogExpected("");
             var addedCountries = new List<CountryResponse>();
             foreach (var request in countryRequests)
             {
                 var added = _countriesService.AddCountry(request);
                 addedCountries.Add(added);
-                _testOutputHelper.WriteLine(added.ToString());
+                LogCountry("Added: ", added);
             }
 
             // Act
             var expectedCountries = _countriesService.GetAllCountries();
 
             // Assert
-            _testOutputHelper.WriteLine($"Actual: ");
+            LogActual("");
             foreach (var added in addedCountries)
             {
                 Assert.Contains(added, expectedCountries);
-                _testOutputHelper.WriteLine(added.ToString());
+                LogCountry("Fetched: ", added);
             }
         }
 
@@ -140,9 +137,9 @@ namespace CRUDDemo.Tests
             // Act
             var fetchedCountryResult = _countriesService.GetCountryByCountryId(countryId);
 
-            // Log
-            _testOutputHelper.WriteLine($"Expected: Fetched CountryResponse is null");
-            _testOutputHelper.WriteLine($"Actual: Fetched CountryResponse - {fetchedCountryResult}");
+            //Log
+            LogExpected("Fetched CountryResponse is null");
+            LogActual($"Fetched CountryResponse - {fetchedCountryResult}");
 
             // Assert
             Assert.Null(fetchedCountryResult);
@@ -152,20 +149,17 @@ namespace CRUDDemo.Tests
         public void GetCountryByCountryId_WhenCountryExists_ReturnsMatchingCountry()
         {
             // Arrange
-            var countryAddRequest = new CountryAddRequest
-            {
-                CountryName = "Japan"
-            };
-
+            var countryAddRequest = CountryTestData.Japan();
             var addedCountry = _countriesService.AddCountry(countryAddRequest);
 
             // Act
             var fetchedCountryResponse = _countriesService.GetCountryByCountryId(addedCountry.CountryId);
 
             // Log
-            _testOutputHelper.WriteLine($"Expected: Added CountryResponse with Id, Fetched Country By Id returns added country");
-            _testOutputHelper.WriteLine($"Actual: CountryResponse - {addedCountry?.ToString()}");
-            _testOutputHelper.WriteLine($"Fetched CountryResponse - {fetchedCountryResponse?.ToString()}");
+            LogExpected("Added CountryResponse with Id, ");
+            LogExpected("Fetched Country By Id returns added country");
+            LogActual($"Added CountryResponse - {addedCountry?.ToString()}");
+            LogActual($"Fetched CountryResponse - {fetchedCountryResponse?.ToString()}");
 
             // Assert
             Assert.NotNull(addedCountry);

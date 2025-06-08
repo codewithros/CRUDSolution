@@ -9,16 +9,17 @@ using CRUDDemo.ServiceContracts;
 using CRUDDemo.Services;
 using Xunit.Abstractions;
 using CRUDDemo.Entities;
+using CRUDDemo.Tests.TestData;
 
 namespace CRUDDemo.Tests
 {
-    public class PersonsServiceTests
+    public class PersonsServiceTests : TestWithOutput
     {
         private readonly IPersonsService _personsService;
         private readonly ICountriesService _countriesService;
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public PersonsServiceTests(ITestOutputHelper testOutputHelper)
+        public PersonsServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper) 
         {
             _personsService = new PersonsService(); 
             _countriesService = new CountriesService();
@@ -37,8 +38,8 @@ namespace CRUDDemo.Tests
             var ex = Assert.Throws<ArgumentNullException>(() => _personsService.AddPerson(request));
 
             //Log
-            _testOutputHelper.WriteLine($"Expected: throw ArgumentNullException");
-            _testOutputHelper.WriteLine($"Actual: {ex.Message}");
+            LogExpected("throw ArgumentNullException");
+            LogActual(ex.Message);
         }
 
         [Fact]
@@ -54,32 +55,25 @@ namespace CRUDDemo.Tests
             var ex = Assert.Throws<ArgumentException>(() => _personsService.AddPerson(request));
 
             //Log
-            _testOutputHelper.WriteLine($"Expected: throw ArgumentException");
-            _testOutputHelper.WriteLine($"Actual: {ex.Message}");
+            LogExpected("throw ArgumentException");
+            LogActual(ex.Message);
         }
 
         [Fact]
         public void AddPerson_WhenValidRequest_ReturnsAndStoresPerson()
         {
-            // Arrange
-            var request = new PersonAddRequest
-            {
-                Name = "Ethan Santos",
-                Email = "ethan@gmail.com",
-                DateOfBirth = new DateTime(2007, 12, 07),
-                Gender = GenderOptions.Male,
-                Address = "969 Smith St.\r\nPort Colborne, ON L3K 5M7",
-                CountryId = Guid.NewGuid(),
-                ReceiveNewsLetters = true
-            };
+            //Arrange
+            CountryAddRequest countryAddRequest = CountryTestData.Canada();
+            CountryResponse countryResponse = _countriesService.AddCountry(countryAddRequest);
+            var request = PersonTestData.EthanSantos(countryResponse.CountryId);
 
             // Act
             var addedPerson = _personsService.AddPerson(request);
             var fetchedPersons = _personsService.GetAllPersons();
 
             //Log
-            _testOutputHelper.WriteLine($"Expected: response has PersonId and exist in the fetched list");
-            _testOutputHelper.WriteLine($"Actual: Person Id - {addedPerson.PersonId}");
+            LogExpected("Response has PersonId and exist in the fetched list");
+            LogActual($"Person Id - {addedPerson.PersonId}");
 
             // Assert
             Assert.NotNull(addedPerson);
@@ -100,9 +94,9 @@ namespace CRUDDemo.Tests
             // Act
             var fetchedPersonById = _personsService.GetPersonByPersonId(personId);
 
-            // Log
-            _testOutputHelper.WriteLine($"Expected: PersonResponse is null");
-            _testOutputHelper.WriteLine($"Actual: PersonResponse - {fetchedPersonById}");
+            //Log
+            LogExpected("PersonResponse is null");
+            LogActual($"PersonResponse - {fetchedPersonById}");
 
             // Assert
             Assert.Null(fetchedPersonById);
@@ -112,33 +106,19 @@ namespace CRUDDemo.Tests
         public void GetPersonByPersonId_WhenPersonExists_ReturnsMatchingPerson()
         {
             // Arrange
-            var countryRequest = new CountryAddRequest
-            {
-                CountryName = "Canada"
-            };
-
-            var country = _countriesService.AddCountry(countryRequest);
-
-            var personRequest = new PersonAddRequest
-            {
-                Name = "Joy Dela Cruz",
-                Email = "joydc@gmail.com",
-                DateOfBirth = new DateTime(2002, 09, 21),
-                Gender = GenderOptions.Female,
-                Address = "102-2255 Carling Ave Ottawa, ON K2B 7Z5",
-                CountryId = country.CountryId,
-                ReceiveNewsLetters = true
-            };
-
+            var countryRequest = CountryTestData.Canada();
+            var addedCountry = _countriesService.AddCountry(countryRequest);
+            var personRequest = PersonTestData.JoyDelaCruz(addedCountry.CountryId);
             var addedPerson = _personsService.AddPerson(personRequest);
 
             // Act
             var fetchedPerson = _personsService.GetPersonByPersonId(addedPerson.PersonId);
 
-            // Log
-            _testOutputHelper.WriteLine($"Expected: Added PersonResponse Returned with PersonId, Fetched Person By Id returns added person");
-            _testOutputHelper.WriteLine($"Actual: Added PersonResponse - {addedPerson?.ToString()}");
-            _testOutputHelper.WriteLine($"Fetchc PersonResponse - {fetchedPerson?.ToString()}");
+            //Log
+            LogExpected("Added PersonResponse Returned with PersonId");
+            LogExpected("Fetched Person By Id returns added person");
+            LogActual($"Added PersonResponse - {addedPerson?.ToString()}");
+            LogActual($"Fetched PersonResponse - {fetchedPerson?.ToString()}");
 
             // Assert
             Assert.NotNull(fetchedPerson);
@@ -155,8 +135,8 @@ namespace CRUDDemo.Tests
             var fetchedPersons = _personsService.GetAllPersons();
 
             // Log
-            _testOutputHelper.WriteLine($"Expected: Empty List");
-            _testOutputHelper.WriteLine($"Actual: Total persons retrieved: {fetchedPersons.Count}");
+            LogExpected("Fetched Empty Persons List");
+            LogActual($"Fetch Persons Count: {fetchedPersons.Count}");
 
             // Assert
             Assert.Empty(fetchedPersons);
@@ -165,64 +145,28 @@ namespace CRUDDemo.Tests
         [Fact]
         public void GetAllPersons_WhenPersonsAdded_ReturnsAllAddedPersons()
         {
-            // Arrange
-            var usa = _countriesService.AddCountry(new CountryAddRequest { CountryName = "USA" });
-            var canada = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Canada" });
-            var japan = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Japan" });
+            //Arrange
+            var (usa, canada, japan) = CountryTestData.AddCommonCountries(_countriesService);
+            var personRequests = PersonTestData.PersonAddRequests(usa.CountryId, canada.CountryId, japan.CountryId);
 
-            var personRequests = new List<PersonAddRequest>
-            {
-                new PersonAddRequest
-                {
-                    Name = "Ava Martinez",
-                    Email = "ava.martinez@example.com",
-                    DateOfBirth = new DateTime(2002, 09, 21),
-                    Gender = GenderOptions.Female,
-                    Address = "742 Evergreen Terrace, Springfield, IL 62704, USA",
-                    CountryId = usa.CountryId,
-                    ReceiveNewsLetters = true
-                },
-                new PersonAddRequest
-                {
-                    Name = "Liam Chen",
-                    Email = "liam.chen@example.com",
-                    DateOfBirth = new DateTime(1999, 3, 15),
-                    Gender = GenderOptions.Male,
-                    Address = "55 Front St W, Toronto, ON M5J 1E6",
-                    CountryId = canada.CountryId,
-                    ReceiveNewsLetters = false
-                },
-                new PersonAddRequest
-                {
-                    Name = "Casey Lee",
-                    Email = "casey.lee@example.com",
-                    DateOfBirth = new DateTime(1995, 7, 30),
-                    Gender = GenderOptions.Other,
-                    Address = "1-1 Chiyoda, Chiyoda City, Tokyo 100-8111, Japan",
-                    CountryId = japan.CountryId,
-                    ReceiveNewsLetters = true
-                }
-            };
-
-            _testOutputHelper.WriteLine($"Expected: ");
+            // Act
+            LogExpected("");
             var expectedPersons = new List<PersonResponse>();
             foreach (var request in personRequests)
             {
                 var added = _personsService.AddPerson(request);
                 expectedPersons.Add(added);
-                _testOutputHelper.WriteLine(added.ToString());
+                LogPerson("Added: ", added);
             }
 
-            // Act
-            var allPersons = _personsService.GetAllPersons();
-
             // Assert
-            _testOutputHelper.WriteLine($"Actual: ");
+            var allPersons = _personsService.GetAllPersons();
+            LogActual("");
             Assert.Equal(expectedPersons.Count, allPersons.Count);
             foreach (var person in expectedPersons)
             {
                 Assert.Contains(person, allPersons);
-                _testOutputHelper.WriteLine(person.ToString());
+                LogPerson("Fetched: ", person);
             }
         }
 
@@ -233,63 +177,28 @@ namespace CRUDDemo.Tests
         public void GetFilteredPersons_WhenSearchByIsEmpty_ReturnsAllPersons()
         {
             // Arrange
-            var usa = _countriesService.AddCountry(new CountryAddRequest { CountryName = "USA" });
-            var canada = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Canada" });
-            var japan = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Japan" });
+            var(usa, canada, japan) = CountryTestData.AddCommonCountries(_countriesService);
+            var personRequests = PersonTestData.PersonAddRequests(usa.CountryId, canada.CountryId, japan.CountryId);
 
-            var personRequests = new List<PersonAddRequest>
-            {
-                new PersonAddRequest
-                {
-                    Name = "Ava Martinez",
-                    Email = "ava.martinez@example.com",
-                    DateOfBirth = new DateTime(2002, 09, 21),
-                    Gender = GenderOptions.Female,
-                    Address = "742 Evergreen Terrace, Springfield, IL 62704, USA",
-                    CountryId = usa.CountryId,
-                    ReceiveNewsLetters = true
-                },
-                new PersonAddRequest
-                {
-                    Name = "Liam Chen",
-                    Email = "liam.chen@example.com",
-                    DateOfBirth = new DateTime(1999, 3, 15),
-                    Gender = GenderOptions.Male,
-                    Address = "55 Front St W, Toronto, ON M5J 1E6",
-                    CountryId = canada.CountryId,
-                    ReceiveNewsLetters = false
-                },
-                new PersonAddRequest
-                {
-                    Name = "Casey Lee",
-                    Email = "casey.lee@example.com",
-                    DateOfBirth = new DateTime(1995, 7, 30),
-                    Gender = GenderOptions.Other,
-                    Address = "1-1 Chiyoda, Chiyoda City, Tokyo 100-8111, Japan",
-                    CountryId = japan.CountryId,
-                    ReceiveNewsLetters = true
-                }
-            };
-
-            _testOutputHelper.WriteLine($"Expected: ");
+            // Act
+            LogExpected("");
             var expectedPersons = new List<PersonResponse>();
             foreach (var request in personRequests)
             {
                 var added = _personsService.AddPerson(request);
                 expectedPersons.Add(added);
-                _testOutputHelper.WriteLine(added.ToString());
+                LogPerson("Added: ", added);
             }
-
-            // Act
+            
             var filteredPersons = _personsService.GetFilteredPersons(nameof(Person.Name), "");
 
             // Assert
-            _testOutputHelper.WriteLine($"Actual: ");
+            LogActual("");
             Assert.Equal(expectedPersons.Count, filteredPersons.Count);
             foreach (var person in expectedPersons)
             {
                 Assert.Contains(person, filteredPersons);
-                _testOutputHelper.WriteLine(person.ToString());
+                LogPerson("Filtered: ", person);
             }
         }
 
@@ -297,58 +206,23 @@ namespace CRUDDemo.Tests
         public void GetFilteredPersons_WhenSearchByName_ReturnsMatchingPersons()
         {
             // Arrange
-            var usa = _countriesService.AddCountry(new CountryAddRequest { CountryName = "USA" });
-            var canada = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Canada" });
-            var japan = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Japan" });
+            var (usa, canada, japan) = CountryTestData.AddCommonCountries(_countriesService);
+            var personRequests = PersonTestData.PersonAddRequests(usa.CountryId, canada.CountryId, japan.CountryId);
 
-            var personRequests = new List<PersonAddRequest>
-            {
-                new PersonAddRequest
-                {
-                    Name = "Ava Martinez",
-                    Email = "ava.martinez@example.com",
-                    DateOfBirth = new DateTime(2002, 09, 21),
-                    Gender = GenderOptions.Female,
-                    Address = "742 Evergreen Terrace, Springfield, IL 62704, USA",
-                    CountryId = usa.CountryId,
-                    ReceiveNewsLetters = true
-                },
-                new PersonAddRequest
-                {
-                    Name = "Liam Chen",
-                    Email = "liam.chen@example.com",
-                    DateOfBirth = new DateTime(1999, 3, 15),
-                    Gender = GenderOptions.Male,
-                    Address = "55 Front St W, Toronto, ON M5J 1E6",
-                    CountryId = canada.CountryId,
-                    ReceiveNewsLetters = false
-                },
-                new PersonAddRequest
-                {
-                    Name = "Casey Lee",
-                    Email = "casey.lee@example.com",
-                    DateOfBirth = new DateTime(1995, 7, 30),
-                    Gender = GenderOptions.Other,
-                    Address = "1-1 Chiyoda, Chiyoda City, Tokyo 100-8111, Japan",
-                    CountryId = japan.CountryId,
-                    ReceiveNewsLetters = true
-                }
-            };
-
-            _testOutputHelper.WriteLine($"Expected: ");
+            LogExpected("");
             var expectedPersons = new List<PersonResponse>();
             foreach (var request in personRequests)
             {
                 var added = _personsService.AddPerson(request);
                 expectedPersons.Add(added);
-                _testOutputHelper.WriteLine(added.ToString());
+                LogPerson("Added: ", added);
             }
 
             // Act
             var filteredPersons = _personsService.GetFilteredPersons(nameof(Person.Name), "ma");
 
             // Assert
-            _testOutputHelper.WriteLine($"Actual: ");
+            LogActual("");
             Assert.Equal(expectedPersons.Count, filteredPersons.Count);
             foreach (var person in expectedPersons)
             {
@@ -357,7 +231,7 @@ namespace CRUDDemo.Tests
                     if(person.Name.Contains("am", StringComparison.OrdinalIgnoreCase))
                     {
                         Assert.Contains(person, filteredPersons);
-                        _testOutputHelper.WriteLine(person.ToString());
+                        LogPerson("Filtered: ", person);
                     }
                 }
 
