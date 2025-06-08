@@ -33,5 +33,13 @@ namespace CRUDDemo.ServiceContracts
         /// A <see cref="PersonResponse"/> if the person is found; otherwise, <c>null</c>.
         /// </returns>
         PersonResponse? GetPersonByPersonId(Guid? personId);
+
+        /// <summary>
+        /// Retrieves all persons that match the specified search criteria.
+        /// </summary>
+        /// <param name="searchBy">The field name to filter by (e.g., "Name", "Email").</param>
+        /// <param name="searchString">The search term to match against the specified field.</param>
+        /// <returns>A list of <see cref="PersonResponse"/> objects that match the search criteria.</returns>
+        List<PersonResponse> GetFilteredPersons(string searchBy, string? searchString);
     }
 }

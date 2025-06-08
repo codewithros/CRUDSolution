@@ -8,6 +8,7 @@ using CRUDDemo.ServiceContracts.Enums;
 using CRUDDemo.ServiceContracts;
 using CRUDDemo.Services;
 using Xunit.Abstractions;
+using CRUDDemo.Entities;
 
 namespace CRUDDemo.Tests
 {
@@ -224,6 +225,145 @@ namespace CRUDDemo.Tests
                 _testOutputHelper.WriteLine(person.ToString());
             }
         }
+
+        #endregion
+
+        #region GetFilteredPersons
+        [Fact]
+        public void GetFilteredPersons_WhenSearchByIsEmpty_ReturnsAllPersons()
+        {
+            // Arrange
+            var usa = _countriesService.AddCountry(new CountryAddRequest { CountryName = "USA" });
+            var canada = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Canada" });
+            var japan = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Japan" });
+
+            var personRequests = new List<PersonAddRequest>
+            {
+                new PersonAddRequest
+                {
+                    Name = "Ava Martinez",
+                    Email = "ava.martinez@example.com",
+                    DateOfBirth = new DateTime(2002, 09, 21),
+                    Gender = GenderOptions.Female,
+                    Address = "742 Evergreen Terrace, Springfield, IL 62704, USA",
+                    CountryId = usa.CountryId,
+                    ReceiveNewsLetters = true
+                },
+                new PersonAddRequest
+                {
+                    Name = "Liam Chen",
+                    Email = "liam.chen@example.com",
+                    DateOfBirth = new DateTime(1999, 3, 15),
+                    Gender = GenderOptions.Male,
+                    Address = "55 Front St W, Toronto, ON M5J 1E6",
+                    CountryId = canada.CountryId,
+                    ReceiveNewsLetters = false
+                },
+                new PersonAddRequest
+                {
+                    Name = "Casey Lee",
+                    Email = "casey.lee@example.com",
+                    DateOfBirth = new DateTime(1995, 7, 30),
+                    Gender = GenderOptions.Other,
+                    Address = "1-1 Chiyoda, Chiyoda City, Tokyo 100-8111, Japan",
+                    CountryId = japan.CountryId,
+                    ReceiveNewsLetters = true
+                }
+            };
+
+            _testOutputHelper.WriteLine($"Expected: ");
+            var expectedPersons = new List<PersonResponse>();
+            foreach (var request in personRequests)
+            {
+                var added = _personsService.AddPerson(request);
+                expectedPersons.Add(added);
+                _testOutputHelper.WriteLine(added.ToString());
+            }
+
+            // Act
+            var filteredPersons = _personsService.GetFilteredPersons(nameof(Person.Name), "");
+
+            // Assert
+            _testOutputHelper.WriteLine($"Actual: ");
+            Assert.Equal(expectedPersons.Count, filteredPersons.Count);
+            foreach (var person in expectedPersons)
+            {
+                Assert.Contains(person, filteredPersons);
+                _testOutputHelper.WriteLine(person.ToString());
+            }
+        }
+
+        [Fact]
+        public void GetFilteredPersons_WhenSearchByName_ReturnsMatchingPersons()
+        {
+            // Arrange
+            var usa = _countriesService.AddCountry(new CountryAddRequest { CountryName = "USA" });
+            var canada = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Canada" });
+            var japan = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Japan" });
+
+            var personRequests = new List<PersonAddRequest>
+            {
+                new PersonAddRequest
+                {
+                    Name = "Ava Martinez",
+                    Email = "ava.martinez@example.com",
+                    DateOfBirth = new DateTime(2002, 09, 21),
+                    Gender = GenderOptions.Female,
+                    Address = "742 Evergreen Terrace, Springfield, IL 62704, USA",
+                    CountryId = usa.CountryId,
+                    ReceiveNewsLetters = true
+                },
+                new PersonAddRequest
+                {
+                    Name = "Liam Chen",
+                    Email = "liam.chen@example.com",
+                    DateOfBirth = new DateTime(1999, 3, 15),
+                    Gender = GenderOptions.Male,
+                    Address = "55 Front St W, Toronto, ON M5J 1E6",
+                    CountryId = canada.CountryId,
+                    ReceiveNewsLetters = false
+                },
+                new PersonAddRequest
+                {
+                    Name = "Casey Lee",
+                    Email = "casey.lee@example.com",
+                    DateOfBirth = new DateTime(1995, 7, 30),
+                    Gender = GenderOptions.Other,
+                    Address = "1-1 Chiyoda, Chiyoda City, Tokyo 100-8111, Japan",
+                    CountryId = japan.CountryId,
+                    ReceiveNewsLetters = true
+                }
+            };
+
+            _testOutputHelper.WriteLine($"Expected: ");
+            var expectedPersons = new List<PersonResponse>();
+            foreach (var request in personRequests)
+            {
+                var added = _personsService.AddPerson(request);
+                expectedPersons.Add(added);
+                _testOutputHelper.WriteLine(added.ToString());
+            }
+
+            // Act
+            var filteredPersons = _personsService.GetFilteredPersons(nameof(Person.Name), "ma");
+
+            // Assert
+            _testOutputHelper.WriteLine($"Actual: ");
+            Assert.Equal(expectedPersons.Count, filteredPersons.Count);
+            foreach (var person in expectedPersons)
+            {
+                if(person != null)
+                {
+                    if(person.Name.Contains("am", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Assert.Contains(person, filteredPersons);
+                        _testOutputHelper.WriteLine(person.ToString());
+                    }
+                }
+
+            }
+        }
+
 
         #endregion
     }
