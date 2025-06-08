@@ -1,5 +1,6 @@
 ﻿using CRUDDemo.Entities;
 using CRUDDemo.ServiceContracts;
+using CRUDDemo.ServiceContracts.DTO;
 using CRUDDemo.ServiceContracts.DTO.Mappers;
 
 namespace CRUDDemo.Services

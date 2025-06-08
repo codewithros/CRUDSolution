@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Metrics;
 using CRUDDemo.Entities;
 
-namespace CRUDDemo.ServiceContracts
+namespace CRUDDemo.ServiceContracts.DTO
 {
     /// <summary>
     /// Request DTO used to add a new country.

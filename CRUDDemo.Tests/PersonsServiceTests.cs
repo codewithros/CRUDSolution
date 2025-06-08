@@ -7,6 +7,7 @@ using CRUDDemo.ServiceContracts.DTO;
 using CRUDDemo.ServiceContracts.Enums;
 using CRUDDemo.ServiceContracts;
 using CRUDDemo.Services;
+using Xunit.Abstractions;
 
 namespace CRUDDemo.Tests
 {
@@ -14,11 +15,13 @@ namespace CRUDDemo.Tests
     {
         private readonly IPersonsService _personsService;
         private readonly ICountriesService _countriesService;
+        private readonly ITestOutputHelper _testOutputHelper;
 
-        public PersonsServiceTests()
+        public PersonsServiceTests(ITestOutputHelper testOutputHelper)
         {
-            _personsService = new PersonsService(); // use mock/real instance for now
+            _personsService = new PersonsService(); 
             _countriesService = new CountriesService();
+            _testOutputHelper = testOutputHelper;
         }
 
         #region AddPerson
@@ -30,7 +33,11 @@ namespace CRUDDemo.Tests
             PersonAddRequest? request = null;
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => _personsService.AddPerson(request));
+            var ex = Assert.Throws<ArgumentNullException>(() => _personsService.AddPerson(request));
+
+            //Log
+            _testOutputHelper.WriteLine($"Expected: throw ArgumentNullException");
+            _testOutputHelper.WriteLine($"Actual: {ex.Message}");
         }
 
         [Fact]
@@ -43,7 +50,11 @@ namespace CRUDDemo.Tests
             };
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => _personsService.AddPerson(request));
+            var ex = Assert.Throws<ArgumentException>(() => _personsService.AddPerson(request));
+
+            //Log
+            _testOutputHelper.WriteLine($"Expected: throw ArgumentException");
+            _testOutputHelper.WriteLine($"Actual: {ex.Message}");
         }
 
         [Fact]
@@ -62,13 +73,17 @@ namespace CRUDDemo.Tests
             };
 
             // Act
-            var person = _personsService.AddPerson(request);
-            var persons = _personsService.GetAllPersons();
+            var addedPerson = _personsService.AddPerson(request);
+            var fetchedPersons = _personsService.GetAllPersons();
+
+            //Log
+            _testOutputHelper.WriteLine($"Expected: response has PersonId and exist in the fetched list");
+            _testOutputHelper.WriteLine($"Actual: Person Id - {addedPerson.PersonId}");
 
             // Assert
-            Assert.NotNull(person);
-            Assert.NotEqual(Guid.Empty, person.CountryId);
-            Assert.Contains(person, persons);
+            Assert.NotNull(addedPerson);
+            Assert.NotEqual(Guid.Empty, addedPerson.CountryId);
+            Assert.Contains(addedPerson, fetchedPersons);
         }
 
         #endregion
@@ -82,10 +97,14 @@ namespace CRUDDemo.Tests
             Guid? personId = null;
 
             // Act
-            var result = _personsService.GetPersonByPersonId(personId);
+            var fetchedPersonById = _personsService.GetPersonByPersonId(personId);
+
+            // Log
+            _testOutputHelper.WriteLine($"Expected: PersonResponse is null");
+            _testOutputHelper.WriteLine($"Actual: PersonResponse - {fetchedPersonById}");
 
             // Assert
-            Assert.Null(result);
+            Assert.Null(fetchedPersonById);
         }
 
         [Fact]
@@ -113,11 +132,16 @@ namespace CRUDDemo.Tests
             var addedPerson = _personsService.AddPerson(personRequest);
 
             // Act
-            var result = _personsService.GetPersonByPersonId(addedPerson.PersonId);
+            var fetchedPerson = _personsService.GetPersonByPersonId(addedPerson.PersonId);
+
+            // Log
+            _testOutputHelper.WriteLine($"Expected: Added PersonResponse Returned with PersonId, Fetched Person By Id returns added person");
+            _testOutputHelper.WriteLine($"Actual: Added PersonResponse - {addedPerson?.ToString()}");
+            _testOutputHelper.WriteLine($"Fetchc PersonResponse - {fetchedPerson?.ToString()}");
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(addedPerson, result);
+            Assert.NotNull(fetchedPerson);
+            Assert.Equal(addedPerson, fetchedPerson);
         }
 
         #endregion
@@ -127,10 +151,14 @@ namespace CRUDDemo.Tests
         public void GetAllPersons_WhenNoPersonsExist_ReturnsEmptyList()
         {
             // Act
-            var result = _personsService.GetAllPersons();
+            var fetchedPersons = _personsService.GetAllPersons();
+
+            // Log
+            _testOutputHelper.WriteLine($"Expected: Empty List");
+            _testOutputHelper.WriteLine($"Actual: Total persons retrieved: {fetchedPersons.Count}");
 
             // Assert
-            Assert.Empty(result);
+            Assert.Empty(fetchedPersons);
         }
 
         [Fact]
@@ -175,21 +203,25 @@ namespace CRUDDemo.Tests
                 }
             };
 
+            _testOutputHelper.WriteLine($"Expected: ");
             var expectedPersons = new List<PersonResponse>();
             foreach (var request in personRequests)
             {
                 var added = _personsService.AddPerson(request);
                 expectedPersons.Add(added);
+                _testOutputHelper.WriteLine(added.ToString());
             }
 
             // Act
             var allPersons = _personsService.GetAllPersons();
 
             // Assert
+            _testOutputHelper.WriteLine($"Actual: ");
             Assert.Equal(expectedPersons.Count, allPersons.Count);
             foreach (var person in expectedPersons)
             {
                 Assert.Contains(person, allPersons);
+                _testOutputHelper.WriteLine(person.ToString());
             }
         }
 

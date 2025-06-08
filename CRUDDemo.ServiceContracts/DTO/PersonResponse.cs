@@ -42,5 +42,19 @@ namespace CRUDDemo.ServiceContracts.DTO
         {
             return HashCode.Combine(PersonId, Name, Email, DateOfBirth, Gender, CountryId, Address, ReceiveNewsLetters);
         }
+
+        public override string ToString()
+        {
+            return $"""
+                Person Id: {PersonId}
+                Name: {Name}
+                Email: {Email}
+                Date of Birth: {DateOfBirth:yyyy-MM-dd}
+                Gender: {Gender}
+                Country: {Country}
+                Address: {Address}
+                Receive Newsletters: {ReceiveNewsLetters}
+            """;
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRUDDemo.ServiceContracts
+namespace CRUDDemo.ServiceContracts.DTO
 {
     /// <summary>
     /// Response DTO representing a country returned by service operations.
@@ -24,15 +24,23 @@ namespace CRUDDemo.ServiceContracts
 
             CountryResponse countryToCompare = (CountryResponse)obj;
 
-            return (
-                this.CountryId == countryToCompare.CountryId &&
-                this.CountryName == countryToCompare.CountryName
-            );
+            return 
+                CountryId == countryToCompare.CountryId &&
+                CountryName == countryToCompare.CountryName
+            ;
         }
 
         public override int GetHashCode()
         {
-            throw new NotImplementedException();
+            return HashCode.Combine(CountryId, CountryName);
+        }
+
+        public override string ToString()
+        {
+            return $"""
+                CountryId = {CountryId}
+                CountryName = {CountryName}
+                """;
         }
     }
 }
