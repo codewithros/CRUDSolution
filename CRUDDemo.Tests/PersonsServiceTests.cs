@@ -121,6 +121,79 @@ namespace CRUDDemo.Tests
         }
 
         #endregion
+        #region GetAllPersons
+
+        [Fact]
+        public void GetAllPersons_WhenNoPersonsExist_ReturnsEmptyList()
+        {
+            // Act
+            var result = _personsService.GetAllPersons();
+
+            // Assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void GetAllPersons_WhenPersonsAdded_ReturnsAllAddedPersons()
+        {
+            // Arrange
+            var usa = _countriesService.AddCountry(new CountryAddRequest { CountryName = "USA" });
+            var canada = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Canada" });
+            var japan = _countriesService.AddCountry(new CountryAddRequest { CountryName = "Japan" });
+
+            var personRequests = new List<PersonAddRequest>
+            {
+                new PersonAddRequest
+                {
+                    Name = "Ava Martinez",
+                    Email = "ava.martinez@example.com",
+                    DateOfBirth = new DateTime(2002, 09, 21),
+                    Gender = GenderOptions.Female,
+                    Address = "742 Evergreen Terrace, Springfield, IL 62704, USA",
+                    CountryId = usa.CountryId,
+                    ReceiveNewsLetters = true
+                },
+                new PersonAddRequest
+                {
+                    Name = "Liam Chen",
+                    Email = "liam.chen@example.com",
+                    DateOfBirth = new DateTime(1999, 3, 15),
+                    Gender = GenderOptions.Male,
+                    Address = "55 Front St W, Toronto, ON M5J 1E6",
+                    CountryId = canada.CountryId,
+                    ReceiveNewsLetters = false
+                },
+                new PersonAddRequest
+                {
+                    Name = "Casey Lee",
+                    Email = "casey.lee@example.com",
+                    DateOfBirth = new DateTime(1995, 7, 30),
+                    Gender = GenderOptions.Other,
+                    Address = "1-1 Chiyoda, Chiyoda City, Tokyo 100-8111, Japan",
+                    CountryId = japan.CountryId,
+                    ReceiveNewsLetters = true
+                }
+            };
+
+            var expectedPersons = new List<PersonResponse>();
+            foreach (var request in personRequests)
+            {
+                var added = _personsService.AddPerson(request);
+                expectedPersons.Add(added);
+            }
+
+            // Act
+            var allPersons = _personsService.GetAllPersons();
+
+            // Assert
+            Assert.Equal(expectedPersons.Count, allPersons.Count);
+            foreach (var person in expectedPersons)
+            {
+                Assert.Contains(person, allPersons);
+            }
+        }
+
+        #endregion
     }
 
 }
