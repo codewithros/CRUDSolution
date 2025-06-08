@@ -24,5 +24,14 @@ namespace CRUDDemo.ServiceContracts
         /// </summary>
         /// <returns>A list of PersonResponse representing all persons.</returns>
         List<PersonResponse> GetAllPersons();
+
+        /// <summary>
+        /// Retrieves a person by their unique PersonId.
+        /// </summary>
+        /// <param name="personId">The unique identifier of the person to retrieve.</param>
+        /// <returns>
+        /// A <see cref="PersonResponse"/> if the person is found; otherwise, <c>null</c>.
+        /// </returns>
+        PersonResponse? GetPersonByPersonId(Guid? personId);
     }
 }

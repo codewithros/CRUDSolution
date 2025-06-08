@@ -52,5 +52,10 @@ namespace CRUDDemo.Services
         {
             throw new NotImplementedException();
         }
+
+        public PersonResponse? GetPersonByPersonId(Guid? personId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
