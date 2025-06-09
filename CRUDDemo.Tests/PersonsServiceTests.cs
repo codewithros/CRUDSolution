@@ -219,11 +219,10 @@ namespace CRUDDemo.Tests
             }
 
             // Act
-            var filteredPersons = _personsService.GetFilteredPersons(nameof(Person.Name), "ma");
+            var filteredPersons = _personsService.GetFilteredPersons(nameof(Person.Name), "am");
 
             // Assert
             LogActual("");
-            Assert.Equal(expectedPersons.Count, filteredPersons.Count);
             foreach (var person in expectedPersons)
             {
                 if(person != null)

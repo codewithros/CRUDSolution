@@ -65,7 +65,48 @@ namespace CRUDDemo.Services
 
         public List<PersonResponse> GetFilteredPersons(string searchBy, string? searchString)
         {
-            throw new NotImplementedException();
+            var allPersons = GetAllPersons();
+
+            if (string.IsNullOrWhiteSpace(searchBy) || string.IsNullOrWhiteSpace(searchString))
+                return allPersons;
+
+            searchString = searchString.Trim();
+
+            return searchBy switch
+            {
+                nameof(Person.Name) => allPersons
+                    .Where(p => !string.IsNullOrWhiteSpace(p.Name) &&
+                                p.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .ToList(),
+
+                nameof(Person.Email) => allPersons
+                    .Where(p => !string.IsNullOrWhiteSpace(p.Email) &&
+                                p.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .ToList(),
+
+                nameof(Person.DateOfBirth) => allPersons
+                    .Where(p => p.DateOfBirth.HasValue &&
+                                p.DateOfBirth.Value.ToString("dd MMMM yyyy")
+                                    .Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .ToList(),
+
+                nameof(Person.Gender) => allPersons
+                    .Where(p => !string.IsNullOrWhiteSpace(p.Gender) &&
+                                p.Gender.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .ToList(),
+
+                nameof(Person.CountryId) => allPersons
+                    .Where(p => !string.IsNullOrWhiteSpace(p.Country) &&
+                                p.Country.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .ToList(),
+
+                nameof(Person.Address) => allPersons
+                    .Where(p => !string.IsNullOrWhiteSpace(p.Address) &&
+                                p.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .ToList(),
+
+                _ => allPersons
+            };
         }
     }
 }
