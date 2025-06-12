@@ -4,6 +4,7 @@ using CRUDDemo.ServiceContracts.DTO;
 using CRUDDemo.ServiceContracts;
 using CRUDDemo.Entities;
 using CRUDDemo.ServiceContracts.DTO.Mappers;
+using CRUDDemo.ServiceContracts.Enums;
 
 namespace CRUDDemo.Services
 {
@@ -107,6 +108,11 @@ namespace CRUDDemo.Services
 
                 _ => allPersons
             };
+        }
+
+        public List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder)
+        {
+            throw new NotImplementedException();
         }
     }
 }

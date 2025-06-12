@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CRUDDemo.ServiceContracts.DTO;
+using CRUDDemo.ServiceContracts.Enums;
 
 namespace CRUDDemo.ServiceContracts
 {
@@ -41,5 +42,14 @@ namespace CRUDDemo.ServiceContracts
         /// <param name="searchString">The search term to match against the specified field.</param>
         /// <returns>A list of <see cref="PersonResponse"/> objects that match the search criteria.</returns>
         List<PersonResponse> GetFilteredPersons(string searchBy, string? searchString);
+
+        /// <summary>
+        /// Returns a sorted list of <see cref="PersonResponse"/>
+        /// </summary>
+        /// <param name="allPersons">The list of persons to be sorted.</param>
+        /// <param name="sortBy">The field name to sort by (e.g., "Name", "Email", "DateOfBirth").</param>
+        /// <param name="sortOrder">The direction of the sort: ascending or descending.</param>
+        /// <returns>A sorted list of <see cref="PersonResponse"/> objects.</returns>
+        List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder);
     }
 }

@@ -236,7 +236,46 @@ namespace CRUDDemo.Tests
 
             }
         }
+        #endregion
 
+        #region GetSortedPersons
+        [Fact]
+        public void GetSortedPersons_WhenSortedByPersonNameDesc_ReturnsPersonsSortedByNameDesc()
+        {
+            // Arrange
+            var (usa, canada, japan) = CountryTestData.AddCommonCountries(_countriesService);
+            var personAddRequests = PersonTestData.PersonAddRequests(usa.CountryId, canada.CountryId, japan.CountryId);
+
+            var expectedSortedPersons = new List<PersonResponse>();
+
+            LogExpected("Persons added before sorting (expected to be sorted by Name DESC):");
+            foreach (var request in personAddRequests)
+            {
+                var addedPerson = _personsService.AddPerson(request);
+                expectedSortedPersons.Add(addedPerson);
+                LogPerson("Added:", addedPerson);
+            }
+
+            expectedSortedPersons = expectedSortedPersons
+                .OrderByDescending(p => p.Name)
+                .ToList();
+
+            // Act
+            var allPersons = _personsService.GetAllPersons();
+            var sortedPersons = _personsService.GetSortedPersons(allPersons, nameof(Person.Name), SortOrderOptions.DESC);
+
+            LogActual("Persons after sorting by Name DESC:");
+            foreach (var sorted in sortedPersons)
+            {
+                LogPerson("Sorted:", sorted);
+            }
+
+            // Assert
+            for (int i = 0; i < expectedSortedPersons.Count; i++)
+            {
+                Assert.Equal(expectedSortedPersons[i], sortedPersons[i]);
+            }
+        }
 
         #endregion
     }
