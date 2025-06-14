@@ -278,6 +278,82 @@ namespace CRUDDemo.Tests
         }
 
         #endregion
+
+        #region UpdatePerson
+        [Fact]
+        public void UpdatePerson_WhenRequestIsNull_ThrowsArgumentNullException()
+        {
+            // Arrange
+            PersonUpdateRequest? personUpdateRequest = null;
+
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => _personsService.UpdatePerson(personUpdateRequest));
+
+            // Log
+            LogExpected("throw ArgumentNullException");
+            LogActual(ex.Message);
+        }
+
+        [Fact]
+        public void UpdatePerson_WhenPersonIdIsInvalid_ThrowsArgumentException()
+        {
+            // Arrange
+            var personUpdateRequest = new PersonUpdateRequest
+            {
+                PersonId = Guid.NewGuid()
+            };
+
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentException>(() => _personsService.UpdatePerson(personUpdateRequest));
+
+            // Log
+            LogExpected("throw ArgumentException");
+            LogActual(ex.Message);
+        }
+
+        [Fact]
+        public void UpdatePerson_WhenNameIsNull_ThrowsArgumentException()
+        {
+            // Arrange
+            var country = _countriesService.AddCountry(CountryTestData.Usa());
+            var addRequest = PersonTestData.AvaMartinez(country.CountryId);
+            var addedPerson = _personsService.AddPerson(addRequest);
+
+            var updateRequest = addedPerson.ToPersonUpdateRequest();
+            updateRequest.Name = null;
+
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentException>(() => _personsService.UpdatePerson(updateRequest));
+
+            // Log
+            LogExpected("throw ArgumentException");
+            LogActual(ex.Message);
+        }
+
+        [Fact]
+        public void UpdatePerson_WhenDetailsAreValid_UpdatesAndReturnsUpdatedPerson()
+        {
+            // Arrange
+            var country = _countriesService.AddCountry(CountryTestData.Canada());
+            var addRequest = PersonTestData.JoyDelaCruz(country.CountryId);
+            var addedPerson = _personsService.AddPerson(addRequest);
+
+            var updateRequest = addedPerson.ToPersonUpdateRequest();
+            updateRequest.Name = "Jane De Castro";
+            updateRequest.Email = "janecastro@yahoo.com";
+
+            // Act
+            var updatedPerson = _personsService.UpdatePerson(updateRequest);
+            var fetchedPerson = _personsService.GetPersonByPersonId(updateRequest.PersonId);
+
+            // Assert
+            Assert.Equal(fetchedPerson, updatedPerson);
+
+            // Log
+            LogPerson("Expected:", fetchedPerson);
+            LogPerson("Actual:", updatedPerson);
+        }
+        #endregion
     }
 
 }

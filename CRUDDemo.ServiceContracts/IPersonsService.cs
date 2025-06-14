@@ -51,5 +51,14 @@ namespace CRUDDemo.ServiceContracts
         /// <param name="sortOrder">The direction of the sort: ascending or descending.</param>
         /// <returns>A sorted list of <see cref="PersonResponse"/> objects.</returns>
         List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder);
+
+        /// <summary>
+        /// Updates the details of an existing person in the system.
+        /// </summary>
+        /// <param name="personUpdateRequest">The updated person information, including the unique identifier.</param>
+        /// <returns>
+        /// A <see cref="PersonResponse"/> representing the updated person, or <c>null</c> if the person does not exist.
+        /// </returns>
+        PersonResponse? UpdatePerson(PersonUpdateRequest? personUpdateRequest);
     }
 }
