@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CRUDDemo.ServiceContracts.Enums;
 
 namespace CRUDDemo.ServiceContracts.DTO
 {
@@ -55,6 +56,20 @@ namespace CRUDDemo.ServiceContracts.DTO
                 Address: {Address}
                 Receive Newsletters: {ReceiveNewsLetters}
             """;
+        }
+        public PersonUpdateRequest ToPersonUpdateRequest()
+        {
+            return new PersonUpdateRequest()
+            {
+                PersonId = PersonId,
+                Name = Name,
+                Email = Email,
+                DateOfBirth = DateOfBirth,
+                Gender = (GenderOptions)Enum.Parse(typeof(GenderOptions), Gender, true),
+                CountryId = CountryId,
+                Address = Address,
+                ReceiveNewsLetters = ReceiveNewsLetters,
+            };
         }
     }
 }
