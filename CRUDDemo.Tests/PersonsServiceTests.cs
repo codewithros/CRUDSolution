@@ -354,6 +354,37 @@ namespace CRUDDemo.Tests
             LogPerson("Actual:", updatedPerson);
         }
         #endregion
+
+        #region DeletePerson
+
+        [Fact]
+        public void DeletePerson_WhenPersonIdIsInvalid_ReturnsFalse()
+        {
+            // Act
+            var isDeleted = _personsService.DeletePerson(Guid.NewGuid());
+
+            // Assert
+            Assert.False(isDeleted);
+        }
+
+        [Fact]
+        public void DeletePerson_WhenPersonIdIsValid_DeletesAndReturnsTrue()
+        {
+            // Arrange
+            var country = _countriesService.AddCountry(CountryTestData.Canada());
+            var addRequest = PersonTestData.LiamChen(country.CountryId);
+            var addedPerson = _personsService.AddPerson(addRequest);
+
+            // Act
+            var isDeleted = _personsService.DeletePerson(addedPerson.PersonId);
+            var fetchedAfterDelete = _personsService.GetPersonByPersonId(addedPerson.PersonId);
+
+            // Assert
+            Assert.True(isDeleted);
+            Assert.Null(fetchedAfterDelete); // ensures deletion was effective
+        }
+
+        #endregion
     }
 
 }

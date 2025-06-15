@@ -60,5 +60,12 @@ namespace CRUDDemo.ServiceContracts
         /// A <see cref="PersonResponse"/> representing the updated person, or <c>null</c> if the person does not exist.
         /// </returns>
         PersonResponse? UpdatePerson(PersonUpdateRequest? personUpdateRequest);
+
+        /// <summary>
+        /// Deletes a person record based on the provided person ID.
+        /// </summary>
+        /// <param name="personId">The unique identifier of the person to delete.</param>
+        /// <returns>True if the person was successfully deleted; otherwise, false.</returns>
+        bool DeletePerson(Guid? personId);
     }
 }

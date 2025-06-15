@@ -197,5 +197,10 @@ namespace CRUDDemo.Services
             // Return updated response
             return ConvertPersonToPersonResponse(existingPerson);
         }
+
+        public bool DeletePerson(Guid? personId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
