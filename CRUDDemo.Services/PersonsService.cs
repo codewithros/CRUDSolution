@@ -200,7 +200,16 @@ namespace CRUDDemo.Services
 
         public bool DeletePerson(Guid? personId)
         {
-            throw new NotImplementedException();
+            if (personId == null)
+                throw new ArgumentNullException(nameof(personId));
+
+            Person? person = _persons.FirstOrDefault(p => p.PersonId == personId);
+
+            if (person == null)
+                return false;
+
+            _persons.RemoveAll(p => p.PersonId == personId);
+            return true;
         }
     }
 }
