@@ -173,7 +173,29 @@ namespace CRUDDemo.Services
 
         public PersonResponse? UpdatePerson(PersonUpdateRequest? personUpdateRequest)
         {
-            throw new NotImplementedException();
+            if (personUpdateRequest == null)
+                throw new ArgumentNullException(nameof(personUpdateRequest));
+
+            // Validate model
+            ValidationHelper.ModelValidation(personUpdateRequest);
+
+            // Find actual person entity in the data store
+            Person? existingPerson = _persons.FirstOrDefault(p => p.PersonId == personUpdateRequest.PersonId);
+
+            if (existingPerson == null)
+                throw new ArgumentException("Person record does not exist.");
+
+            // Update values
+            existingPerson.Name = personUpdateRequest.Name;
+            existingPerson.Email = personUpdateRequest.Email;
+            existingPerson.DateOfBirth = personUpdateRequest.DateOfBirth;
+            existingPerson.Gender = personUpdateRequest.Gender.ToString();
+            existingPerson.CountryId = personUpdateRequest.CountryId;
+            existingPerson.Address = personUpdateRequest.Address;
+            existingPerson.ReceiveNewsLetters = personUpdateRequest.ReceiveNewsLetters;
+
+            // Return updated response
+            return ConvertPersonToPersonResponse(existingPerson);
         }
     }
 }
